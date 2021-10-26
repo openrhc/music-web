@@ -1,18 +1,73 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <!-- 导航栏 -->
+    <nav-bar :title="appname" />
+    <!-- 搜索框 -->
+    <search disabled placeholder="请输入搜索关键词" input-align="center" />
+    <pull-refresh v-model="loading" @refresh="onRefresh" class="refresh">
+      <!-- banner -->
+      <banner />
+      <!-- 金刚区 -->
+      <hot-fun />
+      <!-- 歌曲推荐 -->
+      <recommend-cell
+        icon="replay"
+        title="推荐歌单"
+        rightIcon="more-o"
+      >
+        <template #body>
+          <cell-row />
+        </template>
+      </recommend-cell>
+      <!-- 底线 -->
+      <divider>到底了</divider>
+    </pull-refresh>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+import { defineComponent, reactive, ref } from "vue";
+import { useStore } from "vuex";
+import { Search, Divider, NavBar, PullRefresh, Toast } from "vant";
+import RecommendCell from "../components/Home/RecommendCell.vue";
+import Banner from "../components/Home/Banner.vue";
+import HotFun from "../components/Home/HotFun.vue";
+import CellRow from "../components/Home/CellRow.vue";
 
 export default defineComponent({
-  name: 'Home',
+  name: "Home",
   components: {
-    HelloWorld,
+    Search,
+    RecommendCell,
+    Divider,
+    NavBar,
+    Banner,
+    HotFun,
+    PullRefresh,
+    CellRow,
+  },
+  setup() {
+    const store = useStore();
+    const loading = ref(false);
+
+    // 下拉刷新
+    const onRefresh = () => {
+      setTimeout(() => {
+        Toast("刷新成功");
+        loading.value = false;
+      }, 1000);
+    };
+    return {
+      loading,
+      onRefresh,
+      appname: store.state.appname,
+    };
   },
 });
 </script>
+
+<style lang="less" scoped>
+.refresh {
+  // height: calc(100vh - 100px);
+}
+</style>
