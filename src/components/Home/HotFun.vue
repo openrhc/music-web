@@ -7,6 +7,7 @@
         :icon="f.icon"
         :text="f.text"
         :to="f.to"
+        :badge="f.badge"
       />
     </grid>
   </div>
@@ -26,7 +27,8 @@ export default defineComponent({
       {
         text: "每日推荐",
         icon: "good-job",
-        to: "/about",
+        to: "/recommendsongs",
+        badge: "100%",
       },
       {
         text: "私人FM",

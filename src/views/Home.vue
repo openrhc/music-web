@@ -3,18 +3,14 @@
     <!-- 导航栏 -->
     <nav-bar :title="appname" />
     <!-- 搜索框 -->
-    <search disabled placeholder="请输入搜索关键词" input-align="center" />
+    <search-bar />
     <pull-refresh v-model="loading" @refresh="onRefresh" class="refresh">
       <!-- banner -->
       <banner />
       <!-- 金刚区 -->
       <hot-fun />
       <!-- 歌曲推荐 -->
-      <recommend-cell
-        icon="replay"
-        title="推荐歌单"
-        rightIcon="more-o"
-      >
+      <recommend-cell icon="replay" title="推荐歌单" rightIcon="more-o">
         <template #body>
           <cell-row />
         </template>
@@ -28,19 +24,20 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
 import { useStore } from "vuex";
-import { Search, Divider, NavBar, PullRefresh, Toast } from "vant";
+import { Divider, NavBar, PullRefresh, Toast } from "vant";
 import RecommendCell from "../components/Home/RecommendCell.vue";
 import Banner from "../components/Home/Banner.vue";
 import HotFun from "../components/Home/HotFun.vue";
 import CellRow from "../components/Home/CellRow.vue";
+import SearchBar from "../components/Home/SearchBar.vue";
 
 export default defineComponent({
   name: "Home",
   components: {
-    Search,
     RecommendCell,
     Divider,
     NavBar,
+    SearchBar,
     Banner,
     HotFun,
     PullRefresh,

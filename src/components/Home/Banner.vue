@@ -31,7 +31,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const banners: Array<IBanner> = reactive([]);
+    const banners = reactive<IBanner[]>([]);
     // 获取banner
     const getBannerData = () => {
       axios

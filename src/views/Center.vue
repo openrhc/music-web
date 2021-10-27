@@ -2,6 +2,7 @@
   <div class="center">
     <!-- 导航栏 -->
     <nav-bar :title="appname" />
+
     <!-- 用户信息 -->
     <div
       class="bg"
@@ -45,7 +46,7 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const user: any = store.state.user;
+    const user = store.state.user;
     const isLogin = user.isLogin;
     // 获取用户信息
     const getUserInfo = () => {
@@ -70,7 +71,7 @@ export default defineComponent({
     /* if (isLogin) {
       getUserInfo();
     } */
-    getUserInfo();
+    // getUserInfo();
     // 粗略计算时间
     const formatTime = (time: number) => {
       const now = new Date();
@@ -101,12 +102,13 @@ export default defineComponent({
   height: 120px;
   background-position: center;
   background-size: cover;
+  -webkit-mask: linear-gradient(#000 calc(100% - 5em), transparent);
+  mask: linear-gradient(#000 calc(100% - 5em), transparent);
 }
 .profile {
   display: flex;
   justify-content: space-between;
   padding: 16px;
-  box-shadow: 0 -4px 16px rgba(255, 255, 255, 1);
   .avatar {
     width: 80px;
     height: 80px;

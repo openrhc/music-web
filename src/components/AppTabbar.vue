@@ -1,12 +1,12 @@
 <template>
-  <tabbar active-color="red" route placeholder>
+  <tabbar active-color="red" route placeholder :border="false">
     <tabbar-item v-for="t in tabbar" :key="t.id" :icon="t.icon" :to="t.url">
       {{ t.name }}
     </tabbar-item>
   </tabbar>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive } from "vue";
 import { Tabbar, TabbarItem } from "vant";
 
 export default defineComponent({

@@ -38,7 +38,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     let len = ref(0);
-    const personalizedList: Array<IPersonalized> = reactive([]);
+    const personalizedList = reactive<IPersonalized[]>([]);
     // 获取推荐歌单
     const getPersonalized = () => {
       axios
