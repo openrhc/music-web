@@ -25,14 +25,20 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/about',
     name: 'About',
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => import(/* webpackChunkName: "pages" */ '../views/About.vue')
   },
   // 每日推荐界面
   {
     path: '/recommendsongs',
     name: 'RecommendSongs',
-    component: () => import(/* webpackChunkName: "recommendsongs" */ '../views/RecommendSongs.vue')
-  }
+    component: () => import(/* webpackChunkName: "pages" */ '../views/RecommendSongs.vue')
+  },
+  // 搜索界面
+  {
+    path: '/search',
+    name: 'Search',
+    component: () => import(/* webpackChunkName: "pages" */ '../views/Search.vue')
+  },
 ]
 
 const router = createRouter({

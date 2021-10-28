@@ -2,7 +2,7 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    appname: "Music Online",
+    appname: "网易云音乐",
     appdesp: "发现好音乐",
     // 首页banner
     banners: [],
@@ -61,10 +61,20 @@ export default createStore({
         development: '/static/songs.json',
         production: 'http://192.168.0.10:3000/recommend/songs'
       },
-      // 搜索词（简略）
+      // 搜索词
       hot: {
         development: '/static/hot.json',
-        production: 'http://192.168.0.10:3000/search/hot'
+        production: 'http://192.168.0.10:3000/search/hot/detail'
+      },
+      // 歌词
+      lyric: {
+        development: '/static/lyric.json',
+        production: 'http://192.168.0.10:3000/lyric'
+      },
+      // 搜索歌曲
+      search: {
+        development: '/static/search.json',
+        production: 'http://192.168.0.10:3000/search'
       }
     }
   },

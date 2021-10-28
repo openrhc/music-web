@@ -1,6 +1,11 @@
 <template>
   <div class="search">
-    <search disabled :placeholder="hot" input-align="center" />
+    <search
+      disabled
+      :placeholder="hot.content"
+      input-align="center"
+      @click="handleGoSearch"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -14,19 +19,34 @@ import {
 import { Search } from "vant";
 import axios from "axios";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+
+interface IHot {
+  searchWord: string;
+  content: string;
+}
 
 export default defineComponent({
   name: "SearchBar",
   components: { Search },
   setup() {
     const store = useStore();
-    const hot = ref("请输入搜索内容");
-    const hots: Array<string> = reactive([]);
+    const router = useRouter();
+    const hot = reactive<IHot>({
+      searchWord: "",
+      content: "搜索音乐、视频、歌手",
+    });
+    const hots = reactive<IHot[]>([]);
     // 获取搜索热词
     const getHotData = () => {
       axios.get(store.state.api.hot[process.env.NODE_ENV]).then((res) => {
         hots.push(
-          ...res.data.result.hots.map((item: { first: string }) => item.first)
+          ...res.data.data.map((item: IHot) => {
+            return {
+              searchWord: item.searchWord,
+              content: item.content,
+            };
+          })
         );
       });
     };
@@ -35,17 +55,20 @@ export default defineComponent({
     let index = 0;
     onMounted(() => {
       timer = setInterval(() => {
-        hot.value = hots[index];
+        Object.assign(hot, hots[index]);
         index = index < hots.length - 1 ? index + 1 : 0;
-        console.log("setInterval", hot.value);
       }, 3000);
     });
     onBeforeUnmount(() => {
       clearInterval(timer);
       console.log("SearchBar clearInterval");
     });
+    const handleGoSearch = () => {
+      router.push("/search?keywords=" + hot.searchWord);
+    };
     return {
       hot,
+      handleGoSearch,
     };
   },
 });
