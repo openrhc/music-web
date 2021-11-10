@@ -1,1 +1,206 @@
-{"code":200,"data":[{"searchWord":"漠河舞厅","score":2893729,"content":"如果有时间 来看一看我吧","source":0,"iconType":1,"iconUrl":"https://p1.music.126.net/2zQ0d1ThZCX5Jtkvks9aOQ==/109951163968000522.png","url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"薛之谦","score":1615741,"content":"老薛一发歌就能掀起狂潮！","source":0,"iconType":1,"iconUrl":"https://p1.music.126.net/2zQ0d1ThZCX5Jtkvks9aOQ==/109951163968000522.png","url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"王一博","score":1559577,"content":"王一博新歌《冬梦飞扬》惊喜上线","source":0,"iconType":0,"iconUrl":"http://p4.music.126.net/P4mXkx6VKXLFqVo5ohHxDg==/109951163992439900.jpg","url":"","alg":"featured"},{"searchWord":"起风了","score":1209569,"content":"心之所动 且就随缘去吧","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"张杰","score":1079349,"content":"张杰新专辑《值得更好的》温暖你的夏末和初秋","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"哪里都是你","score":1056846,"content":"怎么才能忘记你","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"浪漫主义","score":1016692,"content":"姜云升爱与救赎的幻想","source":0,"iconType":1,"iconUrl":"https://p1.music.126.net/2zQ0d1ThZCX5Jtkvks9aOQ==/109951163968000522.png","url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"披荆斩棘的哥哥","score":1015086,"content":"《披荆斩棘的哥哥》音频每周准时更新，不要错过！","source":0,"iconType":5,"iconUrl":"https://p1.music.126.net/PtgUJbcvDAY0HKWpmOB2HA==/109951163967988470.png","url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"傻子与白痴","score":921519,"content":"95后音乐人组成的台湾乐团傻子与白痴","source":0,"iconType":0,"iconUrl":"http://p3.music.126.net/P4mXkx6VKXLFqVo5ohHxDg==/109951163992439900.jpg","url":"","alg":"featured"},{"searchWord":"失忆","score":909200,"content":"刘崇健图小图联手演绎孤单心事","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"柳爽","score":905036,"content":"90后独立音乐人柳爽","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"无条件","score":866491,"content":"因世上的至爱，是不计较条件","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"林俊杰","score":851309,"content":"当之无愧的行走CD机！","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"给自己的歌","score":846792,"content":"一切都会好起来的。","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"stay","score":818522,"content":"The Kid LARO携手Justin Bieber共同推出全新单曲《Stay》","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"路过人间","score":802699,"content":"你很好 他也不坏","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"毛不易","score":772915,"content":"深情的唱作人毛不易！","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"许嵩","score":765436,"content":"许嵩的歌，雅俗都能共赏~","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"须尽欢","score":762851,"content":"得意与否 尽欢便够！","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"},{"searchWord":"再见","score":762781,"content":"不如说再见，不如再也不见","source":0,"iconType":0,"iconUrl":null,"url":"","alg":"alg_search_rec_hotquery_base_hotquery"}],"message":"success"}
+{
+    "code": 200,
+    "data": [
+        {
+            "searchWord": "漠河舞厅",
+            "score": 2893729,
+            "content": "如果有时间 来看一看我吧",
+            "source": 0,
+            "iconType": 1,
+            "iconUrl": "https://p1.music.126.net/2zQ0d1ThZCX5Jtkvks9aOQ==/109951163968000522.png",
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "薛之谦",
+            "score": 1615741,
+            "content": "老薛一发歌就能掀起狂潮！",
+            "source": 0,
+            "iconType": 1,
+            "iconUrl": "https://p1.music.126.net/2zQ0d1ThZCX5Jtkvks9aOQ==/109951163968000522.png",
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "王一博",
+            "score": 1559577,
+            "content": "王一博新歌《冬梦飞扬》惊喜上线",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": "http://p4.music.126.net/P4mXkx6VKXLFqVo5ohHxDg==/109951163992439900.jpg",
+            "url": "",
+            "alg": "featured"
+        },
+        {
+            "searchWord": "起风了",
+            "score": 1209569,
+            "content": "心之所动 且就随缘去吧",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "张杰",
+            "score": 1079349,
+            "content": "张杰新专辑《值得更好的》温暖你的夏末和初秋",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "哪里都是你",
+            "score": 1056846,
+            "content": "怎么才能忘记你",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "浪漫主义",
+            "score": 1016692,
+            "content": "姜云升爱与救赎的幻想",
+            "source": 0,
+            "iconType": 1,
+            "iconUrl": "https://p1.music.126.net/2zQ0d1ThZCX5Jtkvks9aOQ==/109951163968000522.png",
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "披荆斩棘的哥哥",
+            "score": 1015086,
+            "content": "《披荆斩棘的哥哥》音频每周准时更新，不要错过！",
+            "source": 0,
+            "iconType": 5,
+            "iconUrl": "https://p1.music.126.net/PtgUJbcvDAY0HKWpmOB2HA==/109951163967988470.png",
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "傻子与白痴",
+            "score": 921519,
+            "content": "95后音乐人组成的台湾乐团傻子与白痴",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": "http://p3.music.126.net/P4mXkx6VKXLFqVo5ohHxDg==/109951163992439900.jpg",
+            "url": "",
+            "alg": "featured"
+        },
+        {
+            "searchWord": "失忆",
+            "score": 909200,
+            "content": "刘崇健图小图联手演绎孤单心事",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "柳爽",
+            "score": 905036,
+            "content": "90后独立音乐人柳爽",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "无条件",
+            "score": 866491,
+            "content": "因世上的至爱，是不计较条件",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "林俊杰",
+            "score": 851309,
+            "content": "当之无愧的行走CD机！",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "给自己的歌",
+            "score": 846792,
+            "content": "一切都会好起来的。",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "stay",
+            "score": 818522,
+            "content": "The Kid LARO携手Justin Bieber共同推出全新单曲《Stay》",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "路过人间",
+            "score": 802699,
+            "content": "你很好 他也不坏",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "毛不易",
+            "score": 772915,
+            "content": "深情的唱作人毛不易！",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "许嵩",
+            "score": 765436,
+            "content": "许嵩的歌，雅俗都能共赏~",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "须尽欢",
+            "score": 762851,
+            "content": "得意与否 尽欢便够！",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        },
+        {
+            "searchWord": "再见",
+            "score": 762781,
+            "content": "不如说再见，不如再也不见",
+            "source": 0,
+            "iconType": 0,
+            "iconUrl": null,
+            "url": "",
+            "alg": "alg_search_rec_hotquery_base_hotquery"
+        }
+    ],
+    "message": "success"
+}

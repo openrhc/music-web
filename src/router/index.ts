@@ -29,15 +29,27 @@ const routes: Array<RouteRecordRaw> = [
   },
   // 每日推荐界面
   {
-    path: '/recommendsongs',
-    name: 'RecommendSongs',
-    component: () => import(/* webpackChunkName: "pages" */ '../views/RecommendSongs.vue')
+    path: '/recommend',
+    name: 'Recommend',
+    component: () => import(/* webpackChunkName: "pages" */ '../views/Recommend.vue')
   },
   // 搜索界面
   {
     path: '/search',
     name: 'Search',
     component: () => import(/* webpackChunkName: "pages" */ '../views/Search.vue')
+  },
+  // 登录界面
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import(/* webpackChunkName: "pages" */ '../views/Login.vue')
+  },
+  // 歌单详情界面
+  {
+    path: '/detail',
+    name: 'Detail',
+    component: () => import(/* webpackChunkName: "pages" */ '../views/Detail.vue')
   },
 ]
 

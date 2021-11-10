@@ -2,29 +2,60 @@
   <div class="center">
     <!-- 导航栏 -->
     <nav-bar :title="appname" />
-
-    <!-- 用户信息 -->
-    <div
-      class="bg"
-      :style="{ backgroundImage: `url(${user.profile.backgroundUrl})` }"
-    ></div>
-    <div class="profile">
-      <img class="avatar" :src="user.profile.avatarUrl" alt="" />
-      <div class="nick">
-        <div class="nickname">{{ user.profile.nickname }}</div>
-        <div class="createtime">{{ formatTime(user.account.createTime) }}</div>
+    <empty description="您还没有登录" v-if="!isLogin">
+      <van-button round type="danger" class="bottom-button" to="/login"
+        >点 击 登 录</van-button
+      >
+    </empty>
+    <div v-else>
+      <div
+        class="bg"
+        :style="{ backgroundImage: `url(${user.profile.backgroundUrl})` }"
+      ></div>
+      <div class="profile">
+        <img class="avatar" :src="user.profile.avatarUrl" alt="" />
+        <div class="nick">
+          <div class="nickname">{{ user.profile.nickname }}</div>
+          <div class="createtime">
+            {{ formatTime(user.account.createTime) }}
+          </div>
+        </div>
+      </div>
+      <!-- 个人歌单列表 -->
+      <div class="playlist-wrap">
+        <div
+          class="playlist-item"
+          v-for="p in userPlaylist"
+          :key="p.id"
+          @click="handleDetail(p)"
+        >
+          <div class="cover">
+            <img v-lazy="p.coverImgUrl" alt="" />
+          </div>
+          <div class="body">
+            <div class="title">
+              {{ p.name }}
+            </div>
+            <div class="info">
+              {{ p.name }}
+            </div>
+          </div>
+          <div class="active">
+            <icon name="ellipsis" />
+          </div>
+        </div>
       </div>
     </div>
-    {{ env }}
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, reactive, ref } from "vue";
 import { useStore } from "vuex";
-import { NavBar } from "vant";
+import { NavBar, Empty, Button as VanButton, Icon } from "vant";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
-interface IUser {
+/* interface IUser {
   isLogin: boolean;
   account: {
     id: number;
@@ -37,23 +68,40 @@ interface IUser {
     backgroundUrl: string;
     createTime: number;
   };
+} */
+
+interface IPlay {
+  // 歌单ID
+  id: number;
+  // 歌单名
+  name: string;
+  // 封面
+  coverImgUrl: string;
+  // 是否是订阅别人的歌单
+  subscribed: boolean;
 }
 
 export default defineComponent({
   name: "Center",
   components: {
     NavBar,
+    Empty,
+    VanButton,
+    Icon,
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
     const user = store.state.user;
-    const isLogin = user.isLogin;
+    const isLogin = ref(user.isLogin);
+    const userPlaylist = reactive<IPlay[]>([]);
     // 获取用户信息
-    const getUserInfo = () => {
-      axios.get(store.state.api.userinfo[process.env.NODE_ENV]).then((res) => {
+    const getAccountInfo = () => {
+      axios.get(store.state.api.account[process.env.NODE_ENV]).then((res) => {
         const u = res.data.data;
         if (res.data.data.code === 200) {
           user.isLogin = true;
+          isLogin.value = true;
           user.account = {
             id: u.account.id,
             createTime: u.account.createTime,
@@ -68,10 +116,21 @@ export default defineComponent({
         }
       });
     };
-    /* if (isLogin) {
-      getUserInfo();
-    } */
-    // getUserInfo();
+    // 获取用户歌单
+    const getUserPlayList = () => {
+      axios.get(store.state.api.playlist[process.env.NODE_ENV] + "?uid=" + user.profile.userId).then((res) => {
+        const { playlist } = res.data;
+        userPlaylist.splice(0);
+        playlist.forEach((play: IPlay) => {
+          userPlaylist.push({
+            id: play.id,
+            name: play.name,
+            coverImgUrl: play.coverImgUrl,
+            subscribed: play.subscribed,
+          });
+        });
+      });
+    };
     // 粗略计算时间
     const formatTime = (time: number) => {
       const now = new Date();
@@ -86,11 +145,21 @@ export default defineComponent({
       }
       return res;
     };
+    const handleDetail = (p: IPlay) => {
+      router.push("/detail?id=" + p.id);
+    };
+
+    if (isLogin.value) {
+      // getAccountInfo();
+      getUserPlayList();
+    }
+
     return {
       user,
       isLogin,
       formatTime,
-      env: process.env.NODE_ENV,
+      userPlaylist,
+      handleDetail,
       appname: store.state.appname,
     };
   },
@@ -98,6 +167,10 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+.center {
+  background: rgb(248, 248, 248);
+  padding-bottom: 100px;
+}
 .bg {
   height: 120px;
   background-position: center;
@@ -105,14 +178,77 @@ export default defineComponent({
   -webkit-mask: linear-gradient(#000 calc(100% - 5em), transparent);
   mask: linear-gradient(#000 calc(100% - 5em), transparent);
 }
+.bottom-button {
+  height: 40px;
+}
 .profile {
   display: flex;
-  justify-content: space-between;
-  padding: 16px;
+  align-items: center;
+  padding: 0 16px;
   .avatar {
     width: 80px;
     height: 80px;
     border-radius: 40px;
+  }
+  .nick {
+    margin-left: 16px;
+    .nickname {
+      font-weight: bold;
+    }
+  }
+}
+
+.playlist-wrap {
+  margin: 16px;
+  padding: 8px 0;
+  background: white;
+  border-radius: 8px;
+}
+.playlist-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  .cover {
+    width: 46px;
+    height: 46px;
+    img {
+      width: 100%;
+      border-radius: 4px;
+    }
+  }
+  .body {
+    flex: 1;
+    margin-left: 8px;
+    width: 0;
+    .title {
+      font-size: 16px;
+      color: black;
+    }
+    .info {
+      font-size: 12px;
+      color: gray;
+      display: flex;
+      div {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .reasons {
+        color: #eec134;
+        margin-right: 4px;
+        background: rgba(220, 220, 3, 0.04);
+      }
+      .ar {
+        margin-right: 4px;
+      }
+    }
+  }
+  .active {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 </style>

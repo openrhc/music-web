@@ -64,16 +64,16 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
 import { useStore } from "vuex";
-import { NavBar, List, Cell, Icon, ImagePreview } from "vant";
+import { NavBar, List, Cell, Icon, ImagePreview, Toast } from "vant";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
 interface ISongs {
-  dailySongs: Array<IDailySongs>;
+  dailySongs: Array<IDailySong>;
   recommendReasons: [];
 }
 
-interface IDailySongs {
+interface IDailySong {
   // 歌曲名
   name: string;
   id: number;
@@ -106,13 +106,18 @@ export default defineComponent({
     // 获取日推歌曲列表
     const getSongsData = () => {
       axios.get(store.state.api.songs[process.env.NODE_ENV]).then((res) => {
-        const { recommendReasons, dailySongs } = res.data.data;
         loading.value = false;
         finished.value = true;
+        if (res.data.code !== 200) {
+          Toast("msg");
+          return;
+        }
+        const { recommendReasons, dailySongs } = res.data.data;
+
         songs.dailySongs.splice(0);
         songs.recommendReasons = recommendReasons;
-        dailySongs.forEach((song: IDailySongs) => {
-          const tmp: IDailySongs = {
+        dailySongs.forEach((song: IDailySong) => {
+          const tmp: IDailySong = {
             name: song.name,
             id: song.id,
             ar: song.ar.map((val: any) => ({ name: val.name })),
@@ -141,11 +146,11 @@ export default defineComponent({
       router.back();
     };
     // 播放音乐
-    const playSong = (song: IDailySongs, index: number) => {
-      console.log('playSong');
+    const playSong = (song: IDailySong, index: number) => {
+      console.log("playSong");
       // 更新播放列表
       store.dispatch("setPlayingList", {
-        list: songs,
+        list: songs.dailySongs,
         playing: song,
       });
     };

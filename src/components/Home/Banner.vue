@@ -24,7 +24,7 @@ interface IBanner {
 }
 
 export default defineComponent({
-  name: "App",
+  name: "Banner",
   components: {
     Swipe,
     SwipeItem,

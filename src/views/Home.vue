@@ -10,11 +10,11 @@
       <!-- 金刚区 -->
       <hot-fun />
       <!-- 歌曲推荐 -->
-      <recommend-cell icon="replay" title="推荐歌单" rightIcon="more-o">
-        <template #body>
-          <cell-row />
-        </template>
-      </recommend-cell>
+      <recommend-cell
+        icon="replay"
+        title="推荐歌单"
+        rightIcon="more-o"
+      ></recommend-cell>
       <!-- 底线 -->
       <divider>到底了</divider>
     </pull-refresh>
@@ -28,7 +28,6 @@ import { Divider, NavBar, PullRefresh, Toast } from "vant";
 import RecommendCell from "../components/Home/RecommendCell.vue";
 import Banner from "../components/Home/Banner.vue";
 import HotFun from "../components/Home/HotFun.vue";
-import CellRow from "../components/Home/CellRow.vue";
 import SearchBar from "../components/Home/SearchBar.vue";
 
 export default defineComponent({
@@ -41,7 +40,6 @@ export default defineComponent({
     Banner,
     HotFun,
     PullRefresh,
-    CellRow,
   },
   setup() {
     const store = useStore();
