@@ -1,5 +1,7 @@
 import { createStore } from 'vuex'
 
+const ip = 'http://hello-world.host:11044/api'
+
 export default createStore({
   state: {
     appname: "悦耳音乐",
@@ -45,92 +47,102 @@ export default createStore({
       // 首页banner
       banner: {
         development: '/static/banner.json',
-        production: 'http://192.168.0.10:3000/banner'
+        production: `${ip}/banner`
       },
       // 
       personalized: {
         development: '/static/personalized.json',
-        production: 'http://192.168.0.10:3000/personalized'
+        production: `${ip}/personalized`
       },
       // 视频
       videos: {
         development: '/static/recommend.json',
-        production: 'http://192.168.0.10:3000/video/timeline/recommend'
+        production: `${ip}/video/timeline/recommend`
+      },
+      // 视频评论
+      videocomment: {
+        development: '/static/video.json',
+        production: `${ip}/comment/video`
       },
       // 用户信息
       account: {
         development: '/static/account.json',
-        production: 'http://192.168.0.10:3000/user/account'
+        production: `${ip}/user/account`
       },
       // 每日推荐
       songs: {
         development: '/static/songs.json',
-        production: 'http://192.168.0.10:3000/recommend/songs'
+        production: `${ip}/recommend/songs`
       },
       // 搜索词
       hot: {
         development: '/static/hot.json',
-        production: 'http://192.168.0.10:3000/search/hot/detail'
+        production: `${ip}/search/hot/detail`
       },
       hot2: {
         development: '/static/hot2.json',
-        production: 'http://192.168.0.10:3000/search/hot'
+        production: `${ip}/search/hot`
       },
       // 歌词
       lyric: {
         development: '/static/lyric.json',
-        production: 'http://192.168.0.10:3000/lyric'
+        production: `${ip}/lyric`
       },
       // 搜索歌曲
       search: {
         development: '/static/search.json',
-        production: 'http://192.168.0.10:3000/search'
+        production: `${ip}/search`
       },
       // 生成二维码的KEY
       qrkey: {
         development: '/static/qrkey.json',
-        production: 'http://192.168.0.10:3000/login/qr/key'
+        production: `${ip}/login/qr/key`
       },
       // 生成二维码接口
       qrcreate: {
         development: '/static/qrcreate.json',
-        production: 'http://192.168.0.10:3000/login/qr/create'
+        production: `${ip}/login/qr/create`
       },
       // 检测二维码状态接口
       qrcheck: {
         development: '/static/qrcheck.json',
-        production: 'http://192.168.0.10:3000/login/qr/check'
+        production: `${ip}/login/qr/check`
       },
       // 手机登录
       cellphone: {
         development: '/static/cellphone.json',
-        production: 'http://192.168.0.10:3000/login/cellphone'
+        production: `${ip}/login/cellphone`
       },
       // 歌单详情
       playlistdetails: {
         development: '/static/detail.json',
-        production: 'http://192.168.0.10:3000/playlist/detail'
+        production: `${ip}/playlist/detail`
       },
       // 歌曲详情
       songdetails: {
         development: '/static/songdetails.json',
-        production: 'http://192.168.0.10:3000/song/detail'
+        production: `${ip}/song/detail`
       },
       // 搜索词推荐
       suggest: {
         development: '/static/suggest.json',
-        production: 'http://192.168.0.10:3000/search/suggest'
+        production: `${ip}/search/suggest`
       },
       // 个人歌单
       playlist: {
         development: '/static/playlist.json',
-        production: 'http://192.168.0.10:3000/user/playlist'
+        production: `${ip}/user/playlist`
       },
       // 私人FM
       personalfm: {
         development: '/static/personal_fm.json',
-        production: 'http://192.168.0.10:3000/personal_fm'
+        production: `${ip}/personal_fm`
       },
+      // 新碟
+      album: {
+        development: '/static/album.json',
+        production: `${ip}/album`
+      }
     }
   },
   mutations: {

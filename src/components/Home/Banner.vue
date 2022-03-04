@@ -5,8 +5,10 @@
         v-for="b in banners"
         :key="b"
         v-lazy:background-image="b.imageUrl"
+        @click="handleBannerSong(b)"
       >
         <!-- {{ b.typeTitle }} -->
+        {{ b.targetType }} / {{ b.typeTitle }}
       </swipe-item>
     </swipe>
   </div>
@@ -16,12 +18,18 @@ import { defineComponent, reactive } from "vue";
 import { Swipe, SwipeItem } from "vant";
 import axios from "axios";
 import { useStore } from "vuex";
+import { extractSong, ISong } from "@/common/Song";
 
 interface IBanner {
   imageUrl: string;
   targetId: number;
   typeTitle: string;
+  targetType: number;
 }
+
+// interface IAlbumSong {
+
+// }
 
 export default defineComponent({
   name: "Banner",
@@ -44,6 +52,7 @@ export default defineComponent({
               imageUrl: banner.imageUrl,
               targetId: banner.targetId,
               typeTitle: banner.typeTitle,
+              targetType: banner.targetType,
             });
           });
           store.dispatch("setBanner", banners);
@@ -51,6 +60,35 @@ export default defineComponent({
         .catch((err) => {
           console.log(err);
         });
+    };
+    // 点击banner中的歌曲
+    const handleBannerSong = (b: IBanner) => {
+      // 新歌首发
+      if (b.targetType === 1) {
+        axios
+          // .get(
+          //   store.state.api.songdetails[process.env.NODE_ENV] +
+          //     "?ids=" +
+          //     b.targetId
+          // )
+          .get(store.state.api.songdetails["production"] + "?ids=" + b.targetId)
+          .then((res) => {
+            const song = extractSong(res.data.songs[0]);
+            const list = store.state.playingList.list;
+            store.dispatch("togglePlayer", true);
+            list.push(song);
+            store.dispatch("setPlayingList", {
+              list,
+              playing: song,
+            });
+            store.dispatch("togglePlayPage", true);
+          });
+        return;
+      }
+      // 新碟首发
+      if (b.targetType === 10) {
+        // 
+      }
     };
     // 从store获取banners
     const bannerStore = store.state.banners;
@@ -61,6 +99,7 @@ export default defineComponent({
     }
     return {
       banners,
+      handleBannerSong,
     };
   },
 });

@@ -30,7 +30,7 @@
             color="black"
           />
         </div>
-        <div class="play-list">
+        <div class="play-list" @click.stop="showPlayList = true">
           <icon name="bars" size="20" />
         </div>
       </div>
@@ -70,7 +70,7 @@
         }"
       ></div>
       <div class="head">
-        <div class="close" @click="showPlayPage = false">
+        <div class="close" @click="handleHidePlayPage">
           <icon name="arrow-down" color="white" size="22" />
         </div>
         <div class="song-info">
@@ -119,18 +119,17 @@
       <div class="action">
         <div class="process">
           <div class="rate">{{ formatPlayTime(currentTime) }}</div>
-          <van-progress
+          <slider
             class="process-bar"
-            :show-pivot="false"
-            stroke-width="2px"
-            color="#ee0a24"
-            :percentage="(currentTime / duration) * 100 || 0"
+            v-model="percent"
+            active-color="#ee0a24"
+            @change="onSliderChange"
           />
           <div class="duration">{{ formatPlayTime(duration) }}</div>
         </div>
         <div class="btns">
-          <div class="btn">
-            <icon name="play" size="20" color="white" />
+          <div class="btn" @click="changePlayMode">
+            <icon name="exchange" size="20" color="white" />
           </div>
           <div class="btn" style="transform: rotate(180deg)" @click="prevSong">
             <icon name="play" size="22" color="white" />
@@ -209,9 +208,9 @@ import {
   Toast,
   ImagePreview,
   Popup,
-  Progress as VanProgress,
   List,
   Cell,
+  Slider,
 } from "vant";
 import { useToggle } from "@vant/use";
 import axios from "axios";
@@ -223,7 +222,7 @@ interface ILyric {
 
 export default defineComponent({
   name: "Play",
-  components: { VanCircle, Icon, Popup, VanProgress, List, Cell },
+  components: { VanCircle, Icon, Popup, List, Cell, Slider },
   setup() {
     const store = useStore();
     const song = reactive({
@@ -247,13 +246,22 @@ export default defineComponent({
     const isPlaying = ref(false);
     const icons = ["play", "pause"];
     // 播放列表
-    const playlist = store.state.playingList.list;
+    const playlist = reactive(store.state.playingList.list);
     // 播放按钮的图标
     const playIcon = ref(icons[0]);
     // 音频长度
     const duration = ref(0);
     // 当前音频播放时间
     const currentTime = ref(0);
+    // 播放进度
+    const percent = ref(0);
+    // 播放模式
+    const playMode = ref(0);
+    const modes: any = {
+      0: "列表循环",
+      1: "随机",
+      2: "单曲循环",
+    };
     // 歌词
     const lyric = reactive<ILyric>({ lrc: [], tlyric: [] });
     // 当前音频是否出错
@@ -276,13 +284,13 @@ export default defineComponent({
       () => store.state.showPlayPage,
       (val) => {
         showPlayPage.value = val;
+        console.log("showPlayPage状态改变", val);
       }
     );
     // 更新播放列表
     watch(
       () => store.state.playingList.list,
       (val) => {
-        console.log(val);
         playlist.splice(0);
         val.forEach((song: any) => {
           playlist.push(song);
@@ -374,16 +382,28 @@ export default defineComponent({
         duration.value = audio.value.duration;
       }
     };
+    // 播放结束时
     const onEnded = () => {
       console.log("onEnded");
-
-      nextSong();
+      switch (playMode.value) {
+        case 0:
+          nextSong();
+          break;
+        case 1:
+          randomSong();
+          break;
+        case 2:
+          repeatSong();
+          break;
+      }
     };
     // 当audio时间更新
     const onTimeUpdate = () => {
       if (audio.value && audio.value.currentTime) {
         // 更新进度条
         currentTime.value = audio.value.currentTime;
+        // 更新播放进度
+        percent.value = (currentTime.value / duration.value) * 100;
         // 滚动歌词
         for (let i = 0; i < lyric.lrc.length; i++) {
           // 播放页打开时 且 显示歌词时： 才进行计算
@@ -412,6 +432,12 @@ export default defineComponent({
     // 点击播放栏，打开播放页
     const handleShowPlayPage = () => {
       showPlayPage.value = true;
+      store.dispatch("togglePlayPage", true);
+    };
+    // 点击关闭按钮，关闭播放页
+    const handleHidePlayPage = () => {
+      showPlayPage.value = false;
+      store.dispatch("togglePlayPage", false);
     };
     // 播放/暂停
     const handlePlay = () => {
@@ -436,12 +462,13 @@ export default defineComponent({
       let index = playlist.indexOf(tmp) - 1;
       index = index < 0 ? 0 : index;
       store.dispatch("setPlayingList", {
-        list: playlist,
+        list: store.state.playingList.list,
         playing: playlist[index],
       });
     };
     // 下一首
     const nextSong = () => {
+      console.log("下一首歌曲");
       if (playlist.length === 0) {
         return;
       }
@@ -451,18 +478,60 @@ export default defineComponent({
       let index = playlist.indexOf(tmp) + 1;
       index = index > playlist.length - 1 ? playlist.length - 1 : index;
       store.dispatch("setPlayingList", {
-        list: playlist,
+        list: store.state.playingList.list,
         playing: playlist[index],
       });
     };
+    // 随机一首
+    const randomSong = () => {
+      console.log("随机播放歌曲");
+      if (playlist.length <= 1) {
+        return;
+      }
+      const id = song.id;
+      let _id = id;
+      while (id == _id) {
+        _id = Math.floor(Math.random() * playlist.length);
+      }
+      console.log("随机播放" + _id);
+      store.dispatch("setPlayingList", {
+        list: store.state.playingList.list,
+        playing: playlist[_id],
+      });
+    };
+
+    // 重复当前歌曲
+    const repeatSong = () => {
+      if (audio.value) {
+        audio.value.play();
+      }
+    };
     // 播放音乐
-    const playSong = (song: any, index: number) => {
+    const playSong = (song: any) => {
       console.log("playSong");
       // 更新播放列表
       store.dispatch("setPlayingList", {
         list: store.state.playingList.list,
         playing: song,
       });
+    };
+    // 拖动时间条
+    const onSliderChange = (val: number) => {
+      console.log((duration.value / 100) * val);
+      if (audio.value && audio.value.currentTime) {
+        audio.value.currentTime = (duration.value / 100) * val;
+      }
+    };
+    // 改变播放模式
+    const changePlayMode = () => {
+      console.log(playMode.value);
+      playMode.value++;
+      if (playMode.value >= 3) {
+        console.log("重置");
+
+        playMode.value = 0;
+      }
+      Toast(modes[playMode.value]);
     };
     return {
       lyric,
@@ -481,6 +550,7 @@ export default defineComponent({
       handlePlay,
       ImagePreview,
       showPlayPage,
+      handleHidePlayPage,
       handleShowPlayPage,
       showCover,
       toggleCover,
@@ -492,6 +562,9 @@ export default defineComponent({
       showPlayList,
       playlist,
       playSong,
+      percent,
+      onSliderChange,
+      changePlayMode,
     };
   },
 });
@@ -570,7 +643,7 @@ export default defineComponent({
         position: absolute;
         left: 50%;
         top: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%) scale(0.8);
       }
     }
     .play-list {
@@ -701,7 +774,7 @@ export default defineComponent({
       align-items: center;
       .process-bar {
         flex: 1;
-        margin: 0 8px;
+        margin: 0 12px;
       }
     }
     .btns {

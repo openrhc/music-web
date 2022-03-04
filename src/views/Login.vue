@@ -92,7 +92,7 @@ export default defineComponent({
 
     // 手机号（用户名）
     const username = ref("18196789181");
-    const password = ref("1");
+    const password = ref("qq123456789");
 
     // 获取登录二维码
     const getQrImage = () => {
@@ -145,8 +145,12 @@ export default defineComponent({
         return;
       }
       axios
+        // .get(
+        //   store.state.api.cellphone[process.env.NODE_ENV] +
+        //     `?phone=${username.value}&password=${password.value}`
+        // )
         .get(
-          store.state.api.cellphone[process.env.NODE_ENV] +
+          store.state.api.cellphone['production'] +
             `?phone=${username.value}&password=${password.value}`
         )
         .then((res) => {

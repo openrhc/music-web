@@ -9,34 +9,42 @@
         @search="onSearch"
         @cancel="onCancel"
         @clear="onClear"
+        @focus="onFocus"
       />
     </sticky>
     <div v-if="!keywords">
-      <div class="history">
+      <div class="history-wrap" v-if="history.length !== 0">
+        <span class="title">历史记录</span>
+        <div class="history">
+          <div
+            class="item"
+            v-for="h in history"
+            :key="h"
+            @click="handleHistorySearch(h)"
+          >
+            {{ h }}
+          </div>
+        </div>
+        <span class="clear" @click="handleClearHistory">清除</span>
+      </div>
+      <div class="hot">
         <div
           class="item"
-          v-for="h in history"
+          v-for="(h, i) in hotWords"
           :key="h"
-          @click="handleHistorySearch(h)"
+          @click="handleSearchHot(h)"
         >
-          {{ h }}
+          <span class="index">{{ i + 1 }}</span>
+          <span class="name">{{ h }}</span>
         </div>
       </div>
-      <grid :column-num="2" direction="horizontal">
-        <grid-item v-for="(h, i) in hotWords" :key="h">
-          <van-row>
-            <van-col span="8">{{ i + 1 }}</van-col>
-            <van-col span="16">{{ h }}</van-col>
-          </van-row>
-        </grid-item>
-      </grid>
     </div>
     <list
       :loading="suggestWordsLoading"
       :finished="true"
       finished-text=""
       @load="onSuggestWordsLoad"
-      v-else-if="showSuggest"
+      v-if="showSuggest"
     >
       <cell v-for="(s, i) in suggestWords" :key="i">
         <template #value>
@@ -49,7 +57,7 @@
     <list
       :loading="loading"
       :finished="finished"
-      finished-text="没有更多了"
+      finished-text=""
       @load="onLoad"
       v-else
     >
@@ -95,48 +103,10 @@ import {
   customRef,
 } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import {
-  List,
-  Cell,
-  Icon,
-  Search as VanSearch,
-  Sticky,
-  Grid,
-  GridItem,
-  Col as VanCol,
-  Row as VanRow,
-} from "vant";
+import { List, Cell, Icon, Search as VanSearch, Sticky } from "vant";
 import axios from "axios";
 import { useStore } from "vuex";
-
-interface ISong {
-  id: number;
-  // 名称
-  name: string;
-  // 名称后面的字段
-  transNames: string;
-  // 歌手列表
-  artists: string;
-  // 歌手后面的字段
-  album: string;
-  mvid: number;
-}
-
-interface ISongMore {
-  // 歌曲名
-  name: string;
-  id: number;
-  // 歌手列表
-  ar: any[];
-  // 歌曲名说明
-  alia: [];
-  al: {
-    // 歌手后的字段：蓝光 新歌+精选
-    name: string;
-    picUrl: string;
-  };
-  originSongSimpleData: { artists: any } | null;
-}
+import { ISong, ISongMore, extractSong } from "../common/Song";
 
 // 自定义防抖hook函数
 function useDebounceRef<T>(value: T, delay = 200) {
@@ -172,10 +142,6 @@ export default defineComponent({
     Cell,
     Icon,
     Sticky,
-    Grid,
-    GridItem,
-    VanCol,
-    VanRow,
   },
   setup() {
     const router = useRouter();
@@ -187,14 +153,19 @@ export default defineComponent({
     const finished = ref(false);
     const hotWords = reactive<string[]>([]);
     const suggestWords = reactive<any[]>([]);
-    const showSuggest = ref(false)
+    const showSuggest = ref(false);
     const keywords = useDebounceRef(route.query.keywords as string, 500);
     let history = reactive<string[]>([]);
     // 搜索建议加载状态
     const suggestWordsLoading = ref(false);
+    // 是否需要搜索建议
+    const needSuggest = ref(true);
     const search_history = localStorage.getItem("search_history");
     if (search_history) {
-      history = JSON.parse(search_history);
+      history.splice(0);
+      JSON.parse(search_history).forEach((item: string) => {
+        history.push(item);
+      });
     }
     // 获取搜索热词
     const getHotSearch = () => {
@@ -205,7 +176,7 @@ export default defineComponent({
         });
       });
     };
-    // getHotSearch();
+    getHotSearch();
     // 搜索
     const getSearchData = (keywords: string) => {
       loading.value = true;
@@ -256,31 +227,52 @@ export default defineComponent({
     // 点击搜索建议的某一条
     const handleSearchSuggest = (s: any) => {
       keywords.value = s.name + " " + s.artists;
+      needSuggest.value = false;
+      showSuggest.value = false;
       suggestWords.splice(0);
       getSearchData(s.name + " " + s.artists);
     };
+    // 点击热搜的某一条
+    const handleSearchHot = (s: string) => {
+      keywords.value = s;
+      needSuggest.value = false;
+      showSuggest.value = false;
+      suggestWords.splice(0);
+      getSearchData(s);
+    };
     // 监听搜索变化，获取推荐搜索
     watch(keywords, () => {
-      if (keywords.value.trim() && showSuggest.value) {
+      if (keywords.value.trim() && needSuggest.value) {
         onSuggestWordsLoad();
+        showSuggest.value = true;
       }
-      if(keywords.value.length === 0) {
-        songs.splice(0)
-        showSuggest.value = true
+      if (keywords.value.length === 0) {
+        songs.splice(0);
+        showSuggest.value = false;
       }
     });
     const onLoad = () => {
       // getSearchData();
     };
     const onSearch = () => {
+      if (!keywords.value.trim()) {
+        console.log("空");
+        return;
+      }
       suggestWords.splice(0);
-      showSuggest.value = false
+      showSuggest.value = false;
       getSearchData(keywords.value);
-      history.push(keywords.value);
+      history.splice(0, 0, keywords.value);
       localStorage.setItem("search_history", JSON.stringify(history));
+    };
+    const handleClearHistory = () => {
+      history.splice(0);
+      localStorage.setItem("search_history", "[]");
     };
     const handleHistorySearch = (v: string) => {
       keywords.value = v;
+      needSuggest.value = false;
+      showSuggest.value = false;
       getSearchData(v);
     };
     const onCancel = () => {
@@ -288,7 +280,9 @@ export default defineComponent({
     };
     const onClear = () => {
       console.log(1);
-      
+    };
+    const onFocus = () => {
+      needSuggest.value = true;
     };
     const highlitKeywords = (source: string, keywords: string) => {
       return source.replace(
@@ -301,31 +295,14 @@ export default defineComponent({
       axios
         .get(store.state.api.songdetails[process.env.NODE_ENV] + "?ids=" + s.id)
         .then((res) => {
-          const song = res.data.songs[0];
-          const tmp: ISongMore = {
-            name: song.name,
-            id: song.id,
-            ar: song.ar.map((val: any) => ({ name: val.name })),
-            alia: song.alia,
-            al: {
-              name: song.al.name,
-              picUrl: song.al.picUrl,
-            },
-            originSongSimpleData: null,
-          };
-          // 原唱歌手
-          if (song.originSongSimpleData) {
-            tmp.originSongSimpleData = {
-              artists: song.originSongSimpleData.artists,
-            };
-          }
+          const song = extractSong(res.data.songs[0]);
           // 更新播放列表: 搜索的是单曲，不能全部替换，采用添加到原歌单列表的方式
           const list = store.state.playingList.list;
           store.dispatch("togglePlayer", true);
-          list.push(tmp);
+          list.push(song);
           store.dispatch("setPlayingList", {
             list,
-            playing: tmp,
+            playing: song,
           });
         });
     };
@@ -349,6 +326,7 @@ export default defineComponent({
       onSearch,
       onCancel,
       onClear,
+      onFocus,
       loading,
       finished,
       onLoad,
@@ -363,22 +341,66 @@ export default defineComponent({
       onSuggestWordsLoad,
       suggestWordsLoading,
       handleSearchSuggest,
+      handleClearHistory,
+      handleSearchHot,
     };
   },
 });
 </script>
 
 <style lang="less" scoped>
+.history-wrap {
+  display: flex;
+  padding: 0 8px;
+  align-items: center;
+  .title {
+    color: black;
+    font-weight: bold;
+    margin-right: 4px;
+    font-size: 12px;
+  }
+  .clear {
+    margin-left: 4px;
+    font-size: 12px;
+    color: #bcbcbc;
+  }
+}
 .history {
+  flex: 1;
   padding: 8px;
   display: flex;
-  flex-wrap: wrap;
+  overflow-x: auto;
   .item {
     font-size: 12px;
     padding: 4px 8px;
     border-radius: 16px;
+    flex-shrink: 0;
     background: rgba(0, 0, 0, 0.04);
     margin: 4px;
+  }
+}
+.hot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  span {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .item {
+    display: flex;
+    width: 50%;
+    padding: 8px 0;
+    align-items: center;
+    .index {
+      text-align: center;
+      width: 20%;
+    }
+    .name {
+      width: 80%;
+    }
   }
 }
 .song-item {

@@ -22,6 +22,10 @@ export default defineComponent({
     const _showTabbar = store.state.showTabbar;
     const showPlayer = ref(_showPlayer);
     const showTabbar = ref(_showTabbar);
+    // 获取登录状态
+    const user = JSON.parse(localStorage.getItem("user")) || store.state.user;
+    store.dispatch("setUser", user);
+
     watchEffect(() => {
       showPlayer.value = store.state.showPlayer;
       showTabbar.value = store.state.showTabbar;

@@ -44,7 +44,7 @@ export default defineComponent({
     const router = useRouter()
 
     const handleRecommend = () => {
-      if (!store.state.user.isLogin) {
+      if (!store.state.user.isLogin && process.env.NODE_ENV !== 'development') {
         Toast("请先登录");
         return;
       }
@@ -52,7 +52,7 @@ export default defineComponent({
     }
     // 私人FM
     const handlePersonalFm = () => {
-      if (!store.state.user.isLogin) {
+      if (!store.state.user.isLogin && process.env.NODE_ENV !== 'development') {
         Toast("请先登录");
         return;
       }

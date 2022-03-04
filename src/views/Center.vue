@@ -45,13 +45,16 @@
           </div>
         </div>
       </div>
+      <van-button class="logout" type="danger" @click="handleLogout"
+        >退出登录</van-button
+      >
     </div>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
 import { useStore } from "vuex";
-import { NavBar, Empty, Button as VanButton, Icon } from "vant";
+import { NavBar, Empty, Button as VanButton, Icon, Toast } from "vant";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
@@ -118,18 +121,24 @@ export default defineComponent({
     };
     // 获取用户歌单
     const getUserPlayList = () => {
-      axios.get(store.state.api.playlist[process.env.NODE_ENV] + "?uid=" + user.profile.userId).then((res) => {
-        const { playlist } = res.data;
-        userPlaylist.splice(0);
-        playlist.forEach((play: IPlay) => {
-          userPlaylist.push({
-            id: play.id,
-            name: play.name,
-            coverImgUrl: play.coverImgUrl,
-            subscribed: play.subscribed,
+      axios
+        .get(
+          store.state.api.playlist[process.env.NODE_ENV] +
+            "?uid=" +
+            user.profile.userId
+        )
+        .then((res) => {
+          const { playlist } = res.data;
+          userPlaylist.splice(0);
+          playlist.forEach((play: IPlay) => {
+            userPlaylist.push({
+              id: play.id,
+              name: play.name,
+              coverImgUrl: play.coverImgUrl,
+              subscribed: play.subscribed,
+            });
           });
         });
-      });
     };
     // 粗略计算时间
     const formatTime = (time: number) => {
@@ -154,12 +163,37 @@ export default defineComponent({
       getUserPlayList();
     }
 
+    const handleLogout = () => {
+      const user = {
+        isLogin: false,
+        account: {
+          id: 0,
+          createTime: Date.now(),
+        },
+        profile: {
+          userId: 0,
+          nickname: "Music Online",
+          avatarUrl: "logo.png",
+          backgroundUrl: "bg.jpg",
+          createTime: Date.now(),
+        },
+      };
+      store.dispatch("setUser", user);
+      document.cookie = "";
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("search_history");
+      Toast("已退出");
+      router.replace("/");
+    };
+
     return {
       user,
       isLogin,
       formatTime,
       userPlaylist,
       handleDetail,
+      handleLogout,
       appname: store.state.appname,
     };
   },
@@ -250,5 +284,9 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
   }
+}
+.logout {
+  margin: 8px 16px;
+  width: calc(100% - 32px);
 }
 </style>

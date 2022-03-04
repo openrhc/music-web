@@ -9,13 +9,7 @@
   </div>
 </template>
 <script lang="ts">
-import {
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  reactive,
-  ref,
-} from "vue";
+import { defineComponent, onBeforeUnmount, onMounted, reactive } from "vue";
 import { Search } from "vant";
 import axios from "axios";
 import { useStore } from "vuex";
@@ -64,7 +58,11 @@ export default defineComponent({
       console.log("SearchBar clearInterval");
     });
     const handleGoSearch = () => {
-      router.push("/search?keywords=" + hot.searchWord);
+      if (hot.searchWord) {
+        router.push("/search?keywords=" + hot.searchWord);
+      } else {
+        router.push("/search");
+      }
     };
     return {
       hot,
