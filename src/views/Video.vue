@@ -18,13 +18,14 @@
         <video
           :src="v.urlInfo.url"
           :ref="setRef"
+          :data-index="i"
           @click="onVideoClick(i)"
           :class="{ mini: showCommentPage }"
         ></video>
         <div class="info">
           <div class="user">
             <img :src="v.creator.avatarUrl" alt="" />
-            <div class="nickname">{{ v.creator.nickname }}</div>
+            <div class="nickname">{{ v.creator.nickname }} {{ i }}</div>
           </div>
           <div class="desp">
             <div class="title">{{ v.title }}</div>
@@ -84,7 +85,7 @@
       </div>
       <list
         v-model:loading="commentsLoading"
-        :finished="!more"
+        :finished="!hasmore"
         finished-text="没有更多了"
         @load="getComments(false)"
       >
@@ -183,7 +184,7 @@ export default defineComponent({
     const store = useStore();
     const isLogin = store.state.user.isLogin;
     const videos: Array<IVideos> = reactive([]);
-    const el_videos = reactive<HTMLVideoElement[]>([]);
+    const el_videos: any = reactive({});
     const showCommentPage = ref(false);
     // 视频评论
     const videoComments: IVideoComment = reactive({
@@ -202,23 +203,27 @@ export default defineComponent({
     // 当前视频索引
     let currentIndex = 0;
     // 视频分页
-    let offset = 0;
+    let videoOffset = 0;
     // 是否有更多
-    let hasmore = true;
+    let hasmore = ref(true);
     // 获取视频列表
     const getVideos = () => {
-      if (!hasmore) {
+      if (!hasmore.value) {
         Toast("没有更多了");
         return;
       }
       axios
-        // .get(store.state.api.videos[process.env.NODE_ENV])
-        .get("http://hello-world.host:11044/api/video/timeline/recommend")
+        .get(
+          store.state.api.videos[process.env.NODE_ENV] +
+            "?offset=" +
+            videoOffset
+        )
+        // .get("http://hello-world.host:11044/api/video/timeline/recommend")
         .then((res) => {
-          hasmore = res.data.hasmore;
+          hasmore.value = res.data.hasmore;
           Toast(res.data.msg);
-          if (hasmore) {
-            offset++;
+          if (hasmore.value) {
+            videoOffset++;
           }
           res.data.datas.forEach((item: any) => {
             const data: IVideos = item.data;
@@ -320,7 +325,15 @@ export default defineComponent({
 
     // 动态ref
     const setRef = (el: HTMLVideoElement) => {
-      el_videos.push(el);
+      // swipe滑动时会频繁触setRef函数，因此不采用数组存储video元素
+      // 而是采用对象，el_videos结构如下:
+      // {
+      //    "0": el1,
+      //    "1": el2
+      // }
+      const index = Number(el.dataset.index);
+      el_videos[index] = el;
+      console.log("ref", index);
     };
 
     // 滑动时
@@ -340,6 +353,8 @@ export default defineComponent({
       videoComments.hotComments.splice(0);
       videoComments.comments.splice(0);
       videoComments.count = 0;
+      // 将判断是否有更多评论设置为true
+      hasmore.value = true
       // 获取新的数据
       if (currentIndex === videos.length - 1) {
         console.log("获取新的数据");
@@ -374,6 +389,7 @@ export default defineComponent({
       onVideoClick,
       setRef,
       more,
+      hasmore,
       getComments,
       showCommentPage,
       commentsLoading,
