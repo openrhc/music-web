@@ -1,6 +1,6 @@
-import { createStore } from 'vuex'
+import { createStore, storeKey } from 'vuex'
 
-const ip = 'http://hello-world.host:11044/api'
+const ip = '/api'
 
 export default createStore({
   state: {

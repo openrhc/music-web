@@ -21,11 +21,13 @@
           :data-index="i"
           @click="onVideoClick(i)"
           :class="{ mini: showCommentPage }"
+          :autoplay="i === 0"
+          loop
         ></video>
         <div class="info">
           <div class="user">
             <img :src="v.creator.avatarUrl" alt="" />
-            <div class="nickname">{{ v.creator.nickname }} {{ i }}</div>
+            <div class="nickname">{{ v.creator.nickname }}</div>
           </div>
           <div class="desp">
             <div class="title">{{ v.title }}</div>
@@ -37,7 +39,13 @@
             <van-icon name="good-job-o" size="36" color="#eee" />
             {{ v.praisedCount }}
           </div>
-          <div class="item" @click="handleComments()">
+          <div
+            class="item"
+            @click="
+              showCommentPage = true;
+              getComments();
+            "
+          >
             <van-icon name="comment-o" size="36" color="#eee" />
             {{ v.commentCount }}
           </div>
@@ -85,9 +93,10 @@
       </div>
       <list
         v-model:loading="commentsLoading"
-        :finished="!hasmore"
+        :finished="!hasMoreComments"
+        :immediate-check="false"
         finished-text="没有更多了"
-        @load="getComments(false)"
+        @load="getComments"
       >
         <div class="item" v-for="(c, i) in videoComments.comments" :key="i">
           <img :src="c.user.avatarUrl" alt="" />
@@ -148,24 +157,8 @@ interface IVideos {
 }
 
 interface IVideoComment {
-  hotComments: Array<{
-    user: {
-      nickname: string; // 昵称
-      avatarUrl: string; // 头像
-    };
-    content: string; // 评论
-    timeStr: string; // 时间
-    likedCount: number; // 赞数
-  }>;
-  comments: Array<{
-    user: {
-      nickname: string; // 昵称
-      avatarUrl: string; // 头像
-    };
-    content: string; // 评论
-    timeStr: string; // 时间
-    likedCount: number; // 赞数
-  }>;
+  hotComments: Array<[]>;
+  comments: Array<[]>;
   count: number;
 }
 
@@ -197,32 +190,33 @@ export default defineComponent({
     // 评论分页
     let commentPage = 1;
     // 是否有更多评论
-    let more = true;
+    let hasMoreComments = ref(true);
     // 加载评论中
     const commentsLoading = ref(false);
     // 当前视频索引
     let currentIndex = 0;
     // 视频分页
     let videoOffset = 0;
-    // 是否有更多
-    let hasmore = ref(true);
+    // 是否有更多视频
+    let hasMoreVideos = ref(true);
     // 获取视频列表
     const getVideos = () => {
-      if (!hasmore.value) {
+      if (!hasMoreVideos.value) {
         Toast("没有更多了");
         return;
       }
       axios
-        .get(
-          store.state.api.videos[process.env.NODE_ENV] +
-            "?offset=" +
-            videoOffset
-        )
+        // .get(
+        //   store.state.api.videos[process.env.NODE_ENV] +
+        //     "?offset=" +
+        //     videoOffset
+        // )
         // .get("http://hello-world.host:11044/api/video/timeline/recommend")
+        .get(store.state.api.videos["production"] + "?offset=" + videoOffset)
         .then((res) => {
-          hasmore.value = res.data.hasmore;
+          hasMoreVideos.value = res.data.hasmore;
           Toast(res.data.msg);
-          if (hasmore.value) {
+          if (hasMoreVideos.value) {
             videoOffset++;
           }
           res.data.datas.forEach((item: any) => {
@@ -247,23 +241,30 @@ export default defineComponent({
           if (currentVideoId === "") {
             currentVideoId = videos[0].urlInfo.id;
           }
+        })
+        .catch((e) => {
+          Toast.fail(e.message);
         });
     };
     // 获取评论列表
-    const getComments = (isNewVideo: boolean) => {
-      // 点击评论按钮进来，且已经加载过了评论，则返回
-      if (isNewVideo && videoComments.count !== 0) {
-        return;
-      }
+    const getComments = () => {
       console.log("加载评论");
-      if (!more) {
+      if (!hasMoreComments.value) {
         Toast("没有更多了");
         return;
       }
+      const isNewVideo = commentPage === 1;
       commentsLoading.value = true;
       axios
+        // .get(
+        //   store.state.api.videocomment[process.env.NODE_ENV] +
+        //     "?id=" +
+        //     currentVideoId +
+        //     "&offset=" +
+        //     (commentPage - 1) * 20
+        // )
         .get(
-          store.state.api.videocomment[process.env.NODE_ENV] +
+          store.state.api.videocomment["production"] +
             "?id=" +
             currentVideoId +
             "&offset=" +
@@ -271,22 +272,26 @@ export default defineComponent({
         )
         .then((res) => {
           commentsLoading.value = false;
-          more = res.data.more;
+          hasMoreComments.value = res.data.more;
           if (res.data.more) {
             commentPage++;
           }
-          // 热评
-          let hotComments = res.data.hotComments.map((v: any) => {
-            return {
-              user: {
-                nickname: v.user.nickname,
-                avatarUrl: v.user.avatarUrl,
-              },
-              content: v.content,
-              timeStr: v.timeStr,
-              likedCount: v.likedCount,
-            };
-          });
+          if (isNewVideo) {
+            // 热评
+            let hotComments = res.data.hotComments.map((v: any) => {
+              return {
+                user: {
+                  nickname: v.user.nickname,
+                  avatarUrl: v.user.avatarUrl,
+                },
+                content: v.content,
+                timeStr: v.timeStr,
+                likedCount: v.likedCount,
+              };
+            });
+            videoComments.hotComments = hotComments;
+          }
+
           // 普通评论
           let comments = res.data.comments.map((v: any) => {
             return {
@@ -299,8 +304,8 @@ export default defineComponent({
               likedCount: v.likedCount,
             };
           });
-          console.log(hotComments);
-          videoComments.hotComments = hotComments;
+
+          console.log(isNewVideo, comments.length);
           if (isNewVideo) {
             videoComments.comments = comments;
           } else {
@@ -308,14 +313,17 @@ export default defineComponent({
           }
           videoComments.count = res.data.total;
         })
-        .catch((e) => {
+        .catch(() => {
           commentsLoading.value = false;
         });
     };
-    getVideos();
-    // getComments(true);
+
+    if (isLogin) {
+      getVideos();
+    }
 
     onBeforeMount(() => {
+      // 隐藏播放栏
       store.dispatch("togglePlayer", false);
     });
 
@@ -331,9 +339,10 @@ export default defineComponent({
       //    "0": el1,
       //    "1": el2
       // }
-      const index = Number(el.dataset.index);
-      el_videos[index] = el;
-      console.log("ref", index);
+      if (el && el.dataset) {
+        const index = Number(el.dataset.index);
+        el_videos[index] = el;
+      }
     };
 
     // 滑动时
@@ -346,18 +355,21 @@ export default defineComponent({
         el_videos[index + 1].pause();
       }
       el_videos[index].play();
-      console.log(index, currentIndex);
       currentIndex = index;
       currentVideoId = videos[index].urlInfo.id;
       // 将评论清空
       videoComments.hotComments.splice(0);
       videoComments.comments.splice(0);
       videoComments.count = 0;
-      // 将判断是否有更多评论设置为true
-      hasmore.value = true
+      hasMoreComments.value = true;
+      commentPage = 1;
       // 获取新的数据
       if (currentIndex === videos.length - 1) {
-        console.log("获取新的数据");
+        console.log("获取新的videos数据");
+        Toast.loading({
+          message: "加载中...",
+          forbidClick: true,
+        });
         getVideos();
       }
     };
@@ -376,11 +388,6 @@ export default defineComponent({
       }
     };
 
-    const handleComments = () => {
-      showCommentPage.value = true;
-      getComments(true);
-    };
-
     return {
       isLogin,
       videos,
@@ -388,12 +395,12 @@ export default defineComponent({
       onChange,
       onVideoClick,
       setRef,
-      more,
-      hasmore,
+      el_videos,
+      hasMoreComments,
+      hasMoreVideos,
       getComments,
       showCommentPage,
       commentsLoading,
-      handleComments,
       appname: store.state.appname,
     };
   },
@@ -464,8 +471,8 @@ export default defineComponent({
         margin-top: 16px;
         display: flex;
         flex-direction: column;
-        font-size: 14px;
-        text-shadow: 1px 1px 1px black;
+        font-size: 12px;
+        text-shadow: 0px 1px 1px black;
       }
     }
   }
